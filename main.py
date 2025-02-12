@@ -14,7 +14,7 @@ os.makedirs(UPLOAD_DIR,exist_ok=True)
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive.file"
+    "https://www.googleapis.com/auth/drive"
 ]
 CREDS_FILE = os.getenv("GOOGLE_SERVICE_KEY","google_service_key.json")  
 encoded_key = os.getenv('GOOGLE_SECRET_KEY_64')
