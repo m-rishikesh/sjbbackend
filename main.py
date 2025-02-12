@@ -3,23 +3,16 @@ import shutil
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from google.oauth2 import service_account
-import json
-import base64
 
 app = FastAPI()
 
 UPLOAD_DIR = 'uploads'
 os.makedirs(UPLOAD_DIR,exist_ok=True)
 
-SCOPE = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive"
-]
-CREDS_FILE = os.getenv("GOOGLE_SERVICE_KEY","google_service_key.json")  
-encoded_key = os.getenv('GOOGLE_SECRET_KEY_64')
-service_account_info = json.loads(base64.b64decode(encoded_key))
-credentials = service_account.Credentials.from_service_account_info(service_account_info)
+SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+CREDS_FILE = "google_service_key.json"  
+
+credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDS_FILE, SCOPE)
 client = gspread.authorize(credentials)
 
 
