@@ -1,0 +1,26 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+.env
+google_service_key.json
+
+# FastAPI Uploads Directory
+uploads/
+
+# Cache and Logs
+*.log
+*.sqlite3
+
+# Google Service Account Key (Sensitive Info)
+google_service.json
+
+# OS Specific Files
+.DS_Store
+Thumbs.db
+
+# IDE Specific Files
+.vscode/
+.idea/
