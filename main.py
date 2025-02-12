@@ -12,7 +12,10 @@ app = FastAPI()
 UPLOAD_DIR = 'uploads'
 os.makedirs(UPLOAD_DIR,exist_ok=True)
 
-SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+SCOPE = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file"
+]
 CREDS_FILE = os.getenv("GOOGLE_SERVICE_KEY","google_service_key.json")  
 encoded_key = os.getenv('GOOGLE_SECRET_KEY_64')
 service_account_info = json.loads(base64.b64decode(encoded_key))
