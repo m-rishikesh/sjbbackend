@@ -1,10 +1,19 @@
 from fastapi import FastAPI,File,UploadFile,Form
+from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5173", "https://sjbconnect.netlify.app/","https://sjbbackend-1.onrender.com"],  # React dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 UPLOAD_DIR = 'uploads'
 os.makedirs(UPLOAD_DIR,exist_ok=True)
