@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "https://sjbconnect.netlify.app/","https://sjbbackend-1.onrender.com"],  # React dev server
+    allow_origins=["http://localhost:5173","http://127.0.0.1:5173", "https://sjbconnect.netlify.app/","https://sjbbackend-1.onrender.com"],  # React dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,6 +56,8 @@ async def hackupdates(email:str=Form(...),title:str=Form(...),venue:str=Form(...
 async def hackdetail():
     data = sheet.get_all_values()
     data.reverse()
+    keys = ["title","venue","timing","fee","lastDate"]
+    data = [dict(zip(keys,item)) for item in data]
     print(type(data))
-    return {"hackathon details":data}
+    return {"data":data}
 
