@@ -6,10 +6,22 @@ from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
-import uuid
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+origins = [
+    "http://localhost:5173", 
+    "https://yourfrontend.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins, 
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 UPLOAD_DIR = 'uploads'
 os.makedirs(UPLOAD_DIR,exist_ok=True)
@@ -42,7 +54,7 @@ async def root():
     return {"Server is Running":"yes"}
 
 @app.post('/notesupload')
-async def uploadnotes(email:str=Form(...), file:UploadFile = File(...)):
+async def uploadnotes(email:str=Form(...),subject:str=Form(...),branch:str=Form(...),year:str=Form(...), file:UploadFile = File(...)):
     file_path = os.path.join(UPLOAD_DIR,f"{email}_{file.filename}")
 
     # saving the file
@@ -68,8 +80,8 @@ async def uploadnotes(email:str=Form(...), file:UploadFile = File(...)):
     public_url_file = f"https://drive.google.com/file/d/{drive_file['id']}/view"
 
     os.remove(file_path)
-
-    notesheets.append_row([email,public_url_file,drive_file['id']])
+    isAvailable = False
+    notesheets.append_row([email,public_url_file,drive_file['id'],year,branch,subject,isAvailable])
 
     return {
         "message": "File uploaded successfully",
@@ -80,16 +92,27 @@ async def uploadnotes(email:str=Form(...), file:UploadFile = File(...)):
 
 @app.post('/hackupdate')
 async def hackupdates(email:str=Form(...),title:str=Form(...),venue:str=Form(...),datetime:str=Form(...),fee:str=Form(...),lastdate:str=Form(...)):
-
-    sheet.append_row([email,title,venue,datetime,fee,lastdate])
-    return {"message":"data saved successfully"}
+    isAvailable = False
+    sheet.append_row([email,title,venue,datetime,fee,lastdate,isAvailable])
+    print(email)
+    print(datetime)
+    print(venue)
+    print(title)
+    print(lastdate)
+    
+    return {"message":"data saved successfully",}
 
 @app.get('/gethackdetails')
 async def hackdetail():
+    hackdetail = []
     data = sheet.get_all_values()
-    data.reverse()
-    print(type(data))
-    return {"hackathon details":data}
+
+    is_available_index = data[0].index('isAvailable')
+    for i,record in enumerate(data[1:],start=2):
+        if record[is_available_index] == 'TRUE':
+            hackdetail.append(record)
+    hackdetail.reverse()
+    return hackdetail
 
 
 def deletenotes(file_id):
@@ -123,3 +146,24 @@ async def deletenote(email:str):
         return {f"notes deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting row: {e}")
+
+
+@app.get('/getnotes')
+async def getnotesapi():
+    notes_from_g_sheet = notesheets.get_all_records()
+    notes_array_of_objects = []
+
+    for record in notes_from_g_sheet: 
+     dictionary = {
+        'subject': record.get('subject'),  
+        'year': record.get('year'),
+        'branch': record.get('branch'),
+        'noteslink': record.get('noteslink'),
+        'isAvailable': record.get('isAvailable')
+    }
+     if(dictionary['isAvailable']=='TRUE'):
+        notes_array_of_objects.append(dictionary)
+
+    return notes_array_of_objects
+
+    
