@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 origins = [
     "http://localhost:5173", 
-    "https://yourfrontend.com",
+    "https://sjbconnect.netlify.app",
 ]
 
 app.add_middleware(
